@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aptible/supercronic/cronexpr"
 	"github.com/robfig/cron/v3"
 )
 
@@ -26,7 +27,8 @@ type CronRange struct {
 	cronExpression string
 	timeZone       string
 	duration       time.Duration
-	schedule       cron.Schedule
+	expr           *cronexpr.Expression
+	location       *time.Location
 	version        int
 }
 
@@ -72,17 +74,21 @@ func internalNew(cronExpr, tz string, td time.Duration, cp cron.Parser) (cr *Cro
 	// Clean up string parameters
 	cronExpr, tz = strings.TrimSpace(cronExpr), strings.TrimSpace(tz)
 
-	// Append time zone into cron spec if necessary
-	cronSpec := cronExpr
+	// Handle time zone
+	var loc = time.Local
 	if strings.ToLower(tz) == "local" {
 		tz = ""
-	} else if len(tz) > 0 {
-		cronSpec = fmt.Sprintf("CRON_TZ=%s %s", tz, cronExpr)
+	}
+	if len(tz) > 0 {
+		loc, err = time.LoadLocation(tz)
+		if err != nil {
+			return nil, fmt.Errorf("provided bad location %s: %v", tz, err)
+		}
 	}
 
 	// Validate & retrieve crontab schedule
-	var schedule cron.Schedule
-	if schedule, err = cp.Parse(cronSpec); err != nil {
+	var expression *cronexpr.Expression
+	if expression, err = cronexpr.ParseStrict(cronExpr); err != nil {
 		return
 	}
 
@@ -90,7 +96,8 @@ func internalNew(cronExpr, tz string, td time.Duration, cp cron.Parser) (cr *Cro
 		cronExpression: cronExpr,
 		timeZone:       tz,
 		duration:       td,
-		schedule:       schedule,
+		expr:           expression,
+		location:       loc,
 	}
 	return
 }

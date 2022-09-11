@@ -90,7 +90,7 @@ func TestParseString(t *testing.T) {
 				t.Errorf("ParseString() error: %v, wantErr: %v", err, tt.wantErr)
 				return
 			}
-			if !tt.wantErr && (gotCr == nil || gotCr.schedule == nil || gotCr.duration == 0) {
+			if !tt.wantErr && (gotCr == nil || gotCr.expr == nil || gotCr.duration == 0) {
 				t.Errorf("ParseString() incomplete gotCr: %v", gotCr)
 				return
 			}
@@ -136,7 +136,7 @@ func TestParseStringWithCronParser(t *testing.T) {
 				t.Errorf("ParseString() error: %v, wantErr: %v", err, tt.wantErr)
 				return
 			}
-			if !tt.wantErr && (gotCr == nil || gotCr.schedule == nil || gotCr.duration == 0) {
+			if !tt.wantErr && (gotCr == nil || gotCr.expr == nil || gotCr.duration == 0) {
 				t.Errorf("ParseString() incomplete gotCr: %v", gotCr)
 				return
 			}
@@ -227,7 +227,7 @@ func TestCronRange_UnmarshalJSON_Normal(t *testing.T) {
 				t.Errorf("UnmarshalJSON() with pointer error: %v, wantErr: %v", err, tt.wantErr)
 				return
 			}
-			if !tt.wantErr && (gotSP.CR == nil || gotSP.CR.schedule == nil || gotSP.CR.duration == 0) {
+			if !tt.wantErr && (gotSP.CR == nil || gotSP.CR.expr == nil || gotSP.CR.duration == 0) {
 				t.Errorf("UnmarshalJSON() with pointer incomplete gotCr: %v", gotSP.CR)
 				return
 			}
@@ -242,7 +242,7 @@ func TestCronRange_UnmarshalJSON_Normal(t *testing.T) {
 				t.Errorf("UnmarshalJSON() with instance error: %v, wantErr: %v", err, tt.wantErr)
 				return
 			}
-			if !tt.wantErr && (gotSI.CR.schedule == nil || gotSI.CR.duration == 0) {
+			if !tt.wantErr && (gotSI.CR.expr == nil || gotSI.CR.duration == 0) {
 				t.Errorf("UnmarshalJSON() with instance incomplete gotCr: %v", gotSI.CR)
 				return
 			}
