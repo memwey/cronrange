@@ -57,7 +57,7 @@ func (cr *CronRange) IsWithin(t time.Time) (within bool) {
 	}
 
 	within = false
-	searchStart := t.Add(-(cr.duration + 1*time.Second - 1*time.Nanosecond))
+	searchStart := t.Add(-(cr.duration + 1*time.Nanosecond))
 	rangeStart := cr.expr.Next(searchStart)
 	rangeEnd := rangeStart.Add(cr.duration)
 
